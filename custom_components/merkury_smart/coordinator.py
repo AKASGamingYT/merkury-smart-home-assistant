@@ -10,7 +10,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .cloud import MerkuryCloudClient
-from .const import CONF_DEVICE_ID, DOMAIN, UPDATE_INTERVAL_SECONDS
+from .const import CONF_DEVICE_ID, DOMAIN, POWER_COMMAND_GRACE_SECONDS, UPDATE_INTERVAL_SECONDS
 from .helpers import get_entry_devices
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,6 +33,7 @@ class MerkuryCoordinator(DataUpdateCoordinator[dict[str, dict]]):
         )
         self.entry = entry
         self.client = client
+        self._pending_power: dict[str, tuple[bool, float]] = {}
 
     def _configured_device_ids(self) -> list[str]:
         return [device[CONF_DEVICE_ID] for device in get_entry_devices(self.entry)]
@@ -40,10 +41,48 @@ class MerkuryCoordinator(DataUpdateCoordinator[dict[str, dict]]):
     async def _async_update_data(self) -> dict[str, dict]:
         device_ids = self._configured_device_ids()
         try:
-            return await self.client.poll_device_states(device_ids)
+            polled = await self.client.poll_device_states(device_ids)
         except Exception as err:  # noqa: BLE001
             _LOGGER.debug("Update failed: %s", err)
             raise UpdateFailed(str(err)) from err
+        return self._merge_polled_states(polled)
+
+    def _merge_polled_states(self, polled: dict[str, dict]) -> dict[str, dict]:
+        """Apply poll results while preserving recent local power commands."""
+
+        if not self._pending_power:
+            return polled
+
+        now = self.hass.loop.time()
+        merged: dict[str, dict] = {}
+        for device_id, state in polled.items():
+            merged[device_id] = dict(state)
+            pending = self._pending_power.get(device_id)
+            if pending is None:
+                continue
+
+            expected_on, commanded_at = pending
+            age = now - commanded_at
+            polled_on = state.get("power_on")
+
+            if age > POWER_COMMAND_GRACE_SECONDS:
+                self._pending_power.pop(device_id, None)
+                continue
+
+            if polled_on == expected_on:
+                self._pending_power.pop(device_id, None)
+                continue
+
+            merged[device_id]["power_on"] = expected_on
+            _LOGGER.debug(
+                "Keeping commanded power_on=%s for %s (poll had %s, age=%.1fs)",
+                expected_on,
+                device_id,
+                polled_on,
+                age,
+            )
+
+        return merged
 
     @callback
     def _apply_power_state(self, device_id: str, on: bool) -> None:
@@ -63,17 +102,19 @@ class MerkuryCoordinator(DataUpdateCoordinator[dict[str, dict]]):
             dict(self.data[device_id]) if self.data and device_id in self.data else {}
         )
 
+        self._pending_power[device_id] = (on, self.hass.loop.time())
         self._apply_power_state(device_id, on)
         try:
             await self.client.set_power(device_id, on)
         except Exception:
             _LOGGER.exception("set_power failed for %s", device_id)
+            self._pending_power.pop(device_id, None)
             data = dict(self.data or {})
             data[device_id] = previous_state
             self.async_set_updated_data(data)
             raise
 
-        # Reconcile with cloud without blocking the UI toggle.
+        # Reconcile other fields from cloud without clobbering commanded power_on.
         self.hass.async_create_task(self.async_request_refresh())
 
     async def restart_device(self, device_id: str) -> bool:

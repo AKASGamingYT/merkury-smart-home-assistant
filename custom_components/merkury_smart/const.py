@@ -48,3 +48,6 @@ BRIGHTNESS_MIN: Final = 10
 BRIGHTNESS_MAX: Final = 1000
 
 UPDATE_INTERVAL_SECONDS: Final = 30
+
+# Ignore polled power_on that disagrees with a recent command (cloud can lag).
+POWER_COMMAND_GRACE_SECONDS: Final = 10

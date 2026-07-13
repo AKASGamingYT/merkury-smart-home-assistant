@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-07-12
+
+### Fixed
+
+- Prevent post-command cloud polls from reverting switch/light state when Pepper OS returns stale `power_on` (fixes automations appearing to fail after optimistic updates).
+
 ## [0.4.3] - 2026-05-27
 
 ### Added
