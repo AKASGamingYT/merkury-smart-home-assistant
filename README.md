@@ -1,6 +1,6 @@
 <p align="center">
   <img
-    src="https://raw.githubusercontent.com/AKASGaming/merkury-smart-home-assistant/main/brand/icon.png"
+    src="https://raw.githubusercontent.com/AKASGamingYT/merkury-smart-home-assistant/main/brand/icon.png"
     alt="Merkury Smart"
     width="220"
   />
@@ -9,11 +9,11 @@
 <h1 align="center">Merkury Smart for Home Assistant</h1>
 
 <p align="center">
-  <a href="https://github.com/AKASGaming/merkury-smart-home-assistant/releases">
-    <img src="https://img.shields.io/github/v/release/AKASGaming/merkury-smart-home-assistant?label=release" alt="Latest release" />
+  <a href="https://github.com/AKASGamingYT/merkury-smart-home-assistant/releases">
+    <img src="https://img.shields.io/github/v/release/AKASGamingYT/merkury-smart-home-assistant?label=release" alt="Latest release" />
   </a>
-  <a href="https://github.com/AKASGaming/merkury-smart-home-assistant/stargazers">
-    <img src="https://img.shields.io/github/stars/AKASGaming/merkury-smart-home-assistant?style=social" alt="GitHub stars" />
+  <a href="https://github.com/AKASGamingYT/merkury-smart-home-assistant/stargazers">
+    <img src="https://img.shields.io/github/stars/AKASGamingYT/merkury-smart-home-assistant?style=social" alt="GitHub stars" />
   </a>
 </p>
 
@@ -56,20 +56,20 @@ Requires **Home Assistant 2024.1+** (brand icons in the UI need **2026.3+** — 
 ### Option A — HACS (recommended)
 
 1. HACS → Integrations → ⋮ → **Custom repositories**
-2. Add `https://github.com/AKASGaming/merkury-smart-home-assistant` as type **Integration**
+2. Add `https://github.com/AKASGamingYT/merkury-smart-home-assistant` as type **Integration**
 3. Search **Merkury Smart**, install, and **restart Home Assistant**
 4. Settings → Devices & Services → **Add Integration** → **Merkury Smart**
 5. Sign in with your **Merkury Smart email and password** (same as the app)
 6. Leave **brand** as **`geeni`** (required for Merkury Smart accounts on Pepper OS)
 7. Choose **Production** for the cloud environment
 
-HACS uses [GitHub Releases](https://github.com/AKASGaming/merkury-smart-home-assistant/releases) for version numbers. The release tag (e.g. `v0.4.0`) matches `version` in `custom_components/merkury_smart/manifest.json` (without the `v` prefix), which is what Home Assistant shows under **Settings → Updates**.
+HACS uses [GitHub Releases](https://github.com/AKASGamingYT/merkury-smart-home-assistant/releases) for version numbers. The release tag (e.g. `v0.4.0`) matches `version` in `custom_components/merkury_smart/manifest.json` (without the `v` prefix), which is what Home Assistant shows under **Settings → Updates**.
 
 ### Option B — Manual copy
 
-1. **Download** the [latest release](https://github.com/AKASGaming/merkury-smart-home-assistant/releases/latest) or clone this repository:
+1. **Download** the [latest release](https://github.com/AKASGamingYT/merkury-smart-home-assistant/releases/latest) or clone this repository:
    ```bash
-   git clone https://github.com/AKASGaming/merkury-smart-home-assistant.git
+   git clone https://github.com/AKASGamingYT/merkury-smart-home-assistant.git
    ```
 2. Copy the integration folder into your Home Assistant config:
    ```text
@@ -121,7 +121,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/PEPPER_CLOUD_API.md](
 
 | What | Where |
 | ---- | ----- |
-| Human-facing version | [GitHub Releases](https://github.com/AKASGaming/merkury-smart-home-assistant/releases) (`v0.4.0`, …) |
+| Human-facing version | [GitHub Releases](https://github.com/AKASGamingYT/merkury-smart-home-assistant/releases) (`v0.4.0`, …) |
 | Home Assistant / HACS | `custom_components/merkury_smart/manifest.json` → `"version": "0.4.0"` (no `v`) |
 | Updates card in HA | Shown when HACS is installed and a newer **release** exists |
 
